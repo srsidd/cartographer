@@ -15,3 +15,18 @@
 # the License.
 #
 # Author: Siddharth Srivatsa <srivatsasiddharth@gmail.com>, 1/2018
+
+"""
+Core client functionality, common across all API requests (including performing
+HTTP requests).
+"""
+
+########################################################
+# Here  API credentials - 
+# App ID=SXlp6ZNY2WbxLZA2KK9c
+# App Code=zYyz6W7wkgMHhaKuxHQO-w
+
+# Google API credentials -
+# API key=AIzaSyCkGMOjHINaKqBGFqhjRsxrjoWgAsC5cuI
+########################################################
+
