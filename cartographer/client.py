@@ -95,12 +95,15 @@ class CartographerClient(object):
             import traceback
             logger.error('generic exception occurred, %s', traceback.format_exc())
             return None
-
         json_raw_response = response.read()
-
         logger.removeHandler(log_handler) # temporarily disable console logging
         logger.info("Raw response recd from server: %s", json_raw_response)
-        json_data = json.loads(json_raw_response)
+        try:
+            json_data = json.loads(json_raw_response)            
+        except ValueError:
+            logger.error('Returned response was not a json response')
+            return None
+
         logger.addHandler(log_handler) # Reenable console logging
 
         return json_data
