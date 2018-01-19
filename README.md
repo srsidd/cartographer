@@ -26,6 +26,48 @@ optional arguments:
 
 ```
 
+### Using the json parser
+The library also has the functionality to traverse jason data and retreive a particular value embedded within the tree. If the json data returned by the google api is 
+```
+{
+   "results" : [
+      {
+         "address_components" : [
+            {
+               "long_name" : "3618",
+               "short_name" : "3618",
+               "types" : [ "street_number" ]
+            },
+            .......
+         ],
+         "formatted_address" : "3618 Garrott St, Houston, TX 77006, USA",
+         "geometry" : {
+            "location" : {
+               "lat" : 29.7400054,
+               "lng" : -95.38579500000002
+            },
+            "location_type" : "ROOFTOP",
+            "viewport" : {
+               "northeast" : {
+                  "lat" : 29.7413543802915,
+                  "lng" : -95.38444601970852
+               },
+               "southwest" : {
+                  "lat" : 29.7386564197085,
+                  "lng" : -95.38714398029153
+               }
+            }
+         },
+         "partial_match" : true,
+         "place_id" : "ChIJSZmHA2W_QIYREyCmQWVayNs",
+         "types" : [ "street_address" ]
+      }
+   ],
+   "status" : "OK"
+}
+```
+If we want to access the `lat` and `lng` fields, under location under geometry, the parameter path would be `"results/geometry/location/lat"` and `"results/geometry/location/lng"`. This path can be fed to `tools.get_config` method to retrieve the corresponding value.
+
 ## Features
 * Implemented in Python
 * Supports multiple geocoding services (Google and HERE)
