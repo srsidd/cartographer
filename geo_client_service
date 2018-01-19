@@ -6,6 +6,7 @@ import logging
 import argparse
 import os
 
+# Add a logger to log to file
 if not os.path.exists("log/"):
     os.makedirs("log/")
 logging.basicConfig(level=logging.DEBUG, format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s',
@@ -15,16 +16,17 @@ logger.setLevel(logging.INFO)
 log_handler = logging.StreamHandler()
 log_handler.setFormatter(logging.Formatter('[%(levelname)s] %(message)s'))
 logger.addHandler(log_handler)
+
 from cartographer.client import CartographerClient
 from cartographer.client_iface import CartographerIface
 from cartographer.geo_point import GeoPoint
 
 def parse_command_line():
-    # define the command line arguments
+    """ define the command line arguments """
     parser = argparse.ArgumentParser(description='Geocoding Proxy Service.')
-    parser.add_argument('--google_query', '-g', action='store_true', help='Make a request to the Google Geo Coding API, takes in ')
-    parser.add_argument('--here_query', '-r', action='store_true', help='Make a request to the HERE Geo Coding API')
-    parser.add_argument('--custom_query', '-c', action='store_true', help='Make a request to a custom Geo Coding API')
+    parser.add_argument('--google_query', '-g', action='store_true', help='Make a request to the Google Geo Coding API, no args')
+    parser.add_argument('--here_query', '-r', action='store_true', help='Make a request to the HERE Geo Coding API, no args')
+    parser.add_argument('--custom_query', '-c', action='store_true', help='Make a request to a custom Geo Coding API, no args')
 
     args = parser.parse_args()
     av = vars(args)
@@ -38,10 +40,8 @@ def parse_command_line():
     return av
 
 def run():
-    # Get command line options
-    av = parse_command_line()
+    av = parse_command_line()  # Get command line options
 
-    # Connect to server
     client = CartographerClient()
     iface = CartographerIface(client)
 

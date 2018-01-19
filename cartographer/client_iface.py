@@ -10,7 +10,7 @@ log_handler.setFormatter(logging.Formatter('[%(levelname)s] %(message)s'))
 logger.addHandler(log_handler)
 
 class CartographerIface(object):
-""" Class to interface with the Cartographer client """
+    """ Class to interface with the Cartographer client """
 
     def __init__(self, cartographer_client):
         self.client = cartographer_client
@@ -83,7 +83,7 @@ class CartographerIface(object):
                             https://developers.google.com/maps/documentation/geocoding/get-api-key
 
             here_creds: (list) [app_id, app_code] here API parameters which can be got from
-                        https://developer.here.com/documentation/geocoder/common/credentials.html 
+                        https://developer.here.com/documentation/geocoder/common/credentials.html
         """
         if google_api_cred is not None:
             self.client.set_google_api_creds(google_api_cred)
