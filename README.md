@@ -5,7 +5,7 @@
 This python library implements a simple network client to resolve the latitude, and longitude coordinates for a given address by using third party geocoding services.
 
 ## Requirements
-* Python 2.7 or later.
+* Python 2.7.9 or later.
 * A Google Maps API key. (Found [here](https://developers.google.com/maps/documentation/geocoding/get-api-key))
 * A HERE app_id and app_code. (Found [here](https://developer.here.com/documentation/geocoder/common/credentials.html))
 
@@ -24,6 +24,19 @@ optional arguments:
   --here_query, -r    Make a request to the HERE Geo Coding API, no args
   --custom_query, -c  Make a request to a custom Geo Coding API, no args
 
+```
+
+The program prompts the user for the api credentials, and once entered, it asks the user to enter the address for which the lat and lng are to be resolved. The address entered is a space separated string. -
+```
+Please enter the address separated by spaces:
+3451 Walnut Street Philadelphia
+```
+
+For which the output displayed on the terminal will look like - 
+```
+[INFO] Address: Franklin Building, 3451 Walnut St, Philadelphia, PA 19104, USA
+[INFO] Latitude: 39.9533837
+[INFO] Longitude: -75.1938205
 ```
 
 ### Using the json parser
@@ -78,6 +91,7 @@ If we want to access the `lat` and `lng` fields, under location under geometry, 
 * Uses a [PIMPL architecture](http://en.cppreference.com/w/cpp/language/pimpl), to essentially hide the implementation details, and use a stable api to access member functions of the library.
 * Provides an option to query a custom url
 * [Gitflow](https://www.atlassian.com/git/tutorials/comparing-workflows/gitflow-workflow) workflow design
+* Uses python
 
 
 ## Future work
