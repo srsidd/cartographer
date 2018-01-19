@@ -40,7 +40,7 @@ For which the output displayed on the terminal will look like -
 ```
 
 ### Using the json parser
-The library also has the functionality to traverse jason data and retreive a particular value embedded within the tree. If the json data returned by the google api is 
+The library also has the functionality to traverse json data and retrieve a particular value embedded within the tree. If the json data returned by the google api is 
 ```
 {
    "results" : [
@@ -87,7 +87,7 @@ If we want to access the `lat` and `lng` fields, under location under geometry, 
 * Fallback to a backup geocoding service, in case the primary service fails
 * RESTful HTTP Interface
 * Uses JSON for data serialization
-* Json parser to get a particular parameter from the given jason data
+* Json parser to get a particular parameter from the given json data
 * Uses a [PIMPL architecture](http://en.cppreference.com/w/cpp/language/pimpl), to essentially hide the implementation details, and use a stable api to access member functions of the library.
 * Provides an option to query a custom url
 * [Gitflow](https://www.atlassian.com/git/tutorials/comparing-workflows/gitflow-workflow) workflow design
