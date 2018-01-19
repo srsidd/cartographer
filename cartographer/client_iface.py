@@ -37,7 +37,11 @@ class CartographerIface(object):
             Returns: (GeoPoint) Address, latitude and longitude of the address
         """
         if self.addr is None:
-            self.addr = self.client.get_address()
+            try:
+                self.addr = self.client.get_address()
+            except ValueError:
+                self.addr = None
+                return
         g_data = self.client.google_geocode_service(address=self.addr)
         return g_data
 
@@ -47,7 +51,12 @@ class CartographerIface(object):
             Returns: (GeoPoint) Address, latitude and longitude of the address
         """
         if self.addr is None:
-            self.addr = self.client.get_address()
+            try:
+                self.addr = self.client.get_address()
+            except ValueError:
+                self.addr = None
+                return
+
         g_data = self.client.here_geocode_service(address=self.addr)
         return g_data
 
