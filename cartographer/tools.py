@@ -1,5 +1,6 @@
-
-
+#!/usr/bin/python
+import logging
+logger = logging.getLogger(__name__)
 
 def get_config(raw_json_data, param_path):
     """ Traverse json data to get required field
@@ -23,5 +24,5 @@ def get_config(raw_json_data, param_path):
     try:
         return traverse(raw_json_data, config_params)
     except KeyError:
-        # Logger.error("Key not found in response")
+        logger.error("Key not found in response")
         return None

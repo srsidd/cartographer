@@ -1,18 +1,4 @@
-#
-# Copyright 2017 Siddharth Srivatsa. All rights reserved.
-#
-#
-# Licensed under the Apache License, Version 2.0 (the "License"); you may not
-# use this file except in compliance with the License. You may obtain a copy of
-# the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
-# WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
-# License for the specific language governing permissions and limitations under
-# the License.
+#!/usr/bin/python
 #
 # Author: Siddharth Srivatsa <srivatsasiddharth@gmail.com>, 1/2018
 
@@ -20,35 +6,6 @@
 Core client functionality, common across all API requests (including performing
 HTTP requests).
 """
-glob_data = {u'Response': {u'MetaInfo': {u'Timestamp': u'2018-01-17T06:35:39.578+0000'},
-  u'View': [{u'Result': [{u'Location': {u'Address': {u'AdditionalData': [{u'key': u'CountryName',
-          u'value': u'United States'},
-         {u'key': u'StateName', u'value': u'Texas'},
-         {u'key': u'CountyName', u'value': u'Harris'},
-         {u'key': u'PostalCodeType', u'value': u'N'}],
-        u'City': u'Houston',
-        u'Country': u'USA',
-        u'County': u'Harris',
-        u'District': u'Neartown/Montrose',
-        u'HouseNumber': u'3618',
-        u'Label': u'3618 Garrott St, Houston, TX 77006, United States',
-        u'PostalCode': u'77006',
-        u'State': u'TX',
-        u'Street': u'Garrott St'},
-       u'DisplayPosition': {u'Latitude': 29.74001, u'Longitude': -95.3856799},
-       u'LocationId': u'NT_rWcK0AV22v7yQdh4RPXl-A_zYTM4A',
-       u'LocationType': u'point',
-       u'MapView': {u'BottomRight': {u'Latitude': 29.7388858,
-         u'Longitude': -95.3843852},
-        u'TopLeft': {u'Latitude': 29.7411342, u'Longitude': -95.3869746}},
-       u'NavigationPosition': [{u'Latitude': 29.74001,
-         u'Longitude': -95.38546}]},
-      u'MatchLevel': u'houseNumber',
-      u'MatchQuality': {u'City': 1.0, u'HouseNumber': 1.0, u'Street': [1.0]},
-      u'MatchType': u'pointAddress',
-      u'Relevance': 1.0}],
-    u'ViewId': 0,
-    u'_type': u'SearchResultsViewType'}]}}
 
 ########################################################
 # Here  API credentials - 
@@ -60,15 +17,20 @@ glob_data = {u'Response': {u'MetaInfo': {u'Timestamp': u'2018-01-17T06:35:39.578
 ########################################################
 
 
+import os
 import json
 import logging
 import ssl
 import urllib2
+
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+log_handler = logging.StreamHandler()
+log_handler.setFormatter(logging.Formatter('[%(levelname)s] %(message)s'))
+logger.addHandler(log_handler)
+
 from geo_point import GeoPoint
 from tools import get_config
-
-
-logging.basicConfig(format='%(asctime)s %(levelname)s:%(message)s', filename='log/carographer.log', level=logging.INFO)
 
 
 # Links for geo coding services used by HERE API and Google API
@@ -91,36 +53,20 @@ class CartographerClient(object):
     _GOOGLE_ADDR_CONFIG = "results/formatted_address"
     _GOOGLE_STATUS_CONFIG = "status"
 
-    def __init__(self, here_app_id, here_app_code, google_api_key, timeout=None):
+    def __init__(self):
         """
-            :param here_app_id: (for HERE API for Work customers) Your APP ID.
-            :type here_app_id: string
+            here_app_id: (for HERE API for Work customers) Your APP ID.
 
-            :param here_app_code: (for Maps API for Work customers) Your APP code.
-            :type here_app_id: string
+            here_app_code: (for Maps API for Work customers) Your APP code.
 
-            :param google_api_key: (for Google Maps API for Work customers) Your client ID.
-            :type google_api_key: string
-
-            :param timeout: Timeout period for http requests in seconds.
-                Specify "None" for no timeout
-            :type timeout: int
-
+            google_api_key: (for Google Maps API for Work customers) Your client ID.
         """
-        if not (here_app_id and here_app_code):
-            raise ValueError("Must provide a HERE app id and key or enterprise credentials "
-                             "for the HERE API when creating client")
 
-        if not google_api_key:
-            raise ValueError("Must provide a Google API key or enterprise credentials for "
-                             "the Google API when creating client")
-
-        self.here_app_id = here_app_id
-        self.here_app_code = here_app_code
-        self.google_api_key = google_api_key
-        self.timeout = timeout
+        self.here_app_id = None
+        self.here_app_code = None
+        self.google_api_key = None
         self.ssl_context = None
-        logging.info("Initialized geoclient with here_app_id %s, here_app_code %s and google_api_key %s", here_app_id, here_app_code, google_api_key)
+        logger.info("Initialized geoclient")
         self.bypass_ssl_verification()
 
     def bypass_ssl_verification(self):
@@ -128,7 +74,7 @@ class CartographerClient(object):
         self.ssl_context = ssl.create_default_context()
         self.ssl_context.check_hostname = False
         self.ssl_context.verify_mode = ssl.CERT_NONE
-        logging.warn("Bypassing SSL verification")
+        logger.warn("Bypassing SSL verification")
 
     def request(self, url):
         """ Method to make get requests
@@ -137,23 +83,27 @@ class CartographerClient(object):
 
             :rtype: json
         """
-        logging.info("Sending get request to %s", url)
+        logger.info("Sending get request to %s", url)
         try: 
             response = urllib2.urlopen(url, context=self.ssl_context)
         except urllib2.HTTPError, e:
-            logging.error('HTTPError %d with reason %s', e.code, e.reason)
+            logger.error('HTTPError %d with reason, %s', e.code, e.reason)
             return None
         except urllib2.URLError, e:
-            logging.error('URLError with reason %s', e.reason)
+            logger.error('URLError with reason, %s', e.reason)
             return None
         except Exception:
             import traceback
-            logging.error('generic exception occurred, %s', traceback.format_exc())
+            logger.error('generic exception occurred, %s', traceback.format_exc())
             return None
         json_raw_response = response.read()
+        # logger.propogate = False
+        logger.setLevel(logging.WARN)
         logger.info("Raw response recd from server: %s", json_raw_response)
         json_data = json.loads(json_raw_response)
-        logger.info("JSON response recd from API: %s", json_data)
+        logger.info("Parsed JSON response : %s", json_data)
+        # logger.propogate = True
+        logger.setLevel(logging.INFO)
         return json_data
 
     def here_geocode_service(self, address):
@@ -163,27 +113,22 @@ class CartographerClient(object):
 
             :rtype: GeoPoint or None
         """
+        if self.here_app_id is None or self.here_app_code is None:
+            logger.error('Are you sure here app credentials are set?')
+            return None
         app_id = "?app_id=" + self.here_app_id
         app_code = "&app_code=" + self.here_app_code
         address = "&searchtext=" + address
         request_url = _HERE_BASE_URL + app_id + app_code + address
         api_response = self.request(url=request_url)
-        # print("api_response: ", api_response)
-        # TODO: Add checker for status
-        api_response = glob_data  # {
-        # u'Response': {
-        #     u'View': [], 
-        #     u'MetaInfo': {
-        #         u'Timestamp': u'2018-01-17T19:17:20.606+0000'}
-        #     }
-        # }  # 
-        get_config(api_response, self._HERE_STATUS_CONFIG)
+        if api_response is None:
+            return None
         if get_config(api_response, self._HERE_STATUS_CONFIG):
             lat_long = get_config(api_response, self._HERE_LAT_LONG_CONFIG)
             addr = get_config(api_response, self._HERE_ADDR_CONFIG)
             pt = GeoPoint(latitude=lat_long['Latitude'], longitude=lat_long['Longitude'], address=addr)
             return pt
-        Logger.error('Bad request, no data received')
+        logger.error('Bad request, no data received')
         return None
 
     def google_geocode_service(self, address):
@@ -193,17 +138,21 @@ class CartographerClient(object):
 
             :rtype: GeoPoint or None
         """
+        if self.google_api_key is None:
+            logger.error('Are you sure google api credentials are set?')
+            return None
         address = "?address=" + address
         request_url = _GOOGLE_BASE_URL + address
         api_response = self.request(url=request_url)
-        print("api_response: ", api_response)
-        # api_response = glob_data
+        if api_response is None:
+            return None
         if get_config(api_response, self._GOOGLE_STATUS_CONFIG) == "OK":
             lat_long = get_config(api_response, self._GOOGLE_LAT_LONG_CONFIG)
             addr = get_config(api_response, self._GOOGLE_ADDR_CONFIG)
             pt = GeoPoint(latitude=lat_long['lat'], longitude=lat_long['lng'], address=addr)
             return pt
-        Logger.error('Bad request for google API, status received: ' + get_config(api_response, self._GOOGLE_STATUS_CONFIG))
+        logger.error('Bad request for google API, status received: ' + get_config(api_response, self._GOOGLE_STATUS_CONFIG))
+        return None
 
     def get_address(self):
         """ Method to get an address from the user and parse it to the right format """
@@ -218,67 +167,62 @@ class CartographerClient(object):
         raise ValueError("Address entered is too small, please try again")
 
     # Getters and setters for HERE API json config
-    def get_here_lat_long_config():
+    def get_here_lat_long_config(self):
         return self._HERE_LAT_LONG_CONFIG
 
-    def get_here_addr_config():
+    def get_here_addr_config(self):
         return self._HERE_ADDR_CONFIG
 
-    def get_here_status_config():
+    def get_here_status_config(self):
         return self._HERE_STATUS_CONFIG
 
-    def set_here_lat_long_config(config):
+    def set_here_lat_long_config(self, config):
+        logger.info("Setting here lat long config to %s", config)
         self._HERE_LAT_LONG_CONFIG = config
 
-    def set_here_addr_config(config):
+    def set_here_addr_config(self, config):
+        logger.info("Setting here addr config to %s", config)
         self._HERE_ADDR_CONFIG = config
 
-    def set_here_status_config(config):
+    def set_here_status_config(self, config):
+        logger.info("Setting here status config to %s", config)
         self._HERE_STATUS_CONFIG = config
 
-
     # Getters and setters for GOOGLE API json Config
-    def get_google_lat_long_config():
+    def get_google_lat_long_config(self):
         return self._GOOGLE_LAT_LONG_CONFIG
 
-    def get_google_addr_config():
+    def get_google_addr_config(self):
         return self._GOOGLE_ADDR_CONFIG
 
-    def get_google_status_config():
+    def get_google_status_config(self):
         return self._GOOGLE_STATUS_CONFIG
 
-    def set_google_lat_long_config(config):
+    def set_google_lat_long_config(self, config):
+        logger.info("Setting google lat long config to %s", config)
         self._GOOGLE_LAT_LONG_CONFIG = config
 
-    def set_google_addr_config(config):
+    def set_google_addr_config(self, config):
+        logger.info("Setting google addr config to %s", config)
         self._GOOGLE_ADDR_CONFIG = config
 
-    def set_google_status_config(config):
+    def set_google_status_config(self, config):
+        logger.info("Setting google status config to %s", config)
         self._GOOGLE_STATUS_CONFIG = config
 
     # Getters and Setters for HERE API credentials
-    def get_here_api_creds():
+    def get_here_api_creds(self):
         return [self.here_app_id, self.here_app_code]
 
-    def set_here_api_creds(app_id, app_code):
+    def set_here_api_creds(self, app_id, app_code):
+        logger.info("Setting here app_id to %s and app_code to %s", app_id, app_code)
         self.here_app_id = app_id 
         self.here_app_code = app_code
 
     # Getters and Setters for Google API credentials
-    def set_google_api_creds(api_key):
-        self.google_api_key = api_key
-
-    def get_google_api_creds():
+    def get_google_api_creds(self):
         return self.google_api_key
 
-
-if __name__ == '__main__':
-    client = CartographerClient(here_app_id="SXlp6ZNY2WbfxLZA2KK9c", here_app_code="zYyz6W7wkgfMHhaKuxHQO-w", google_api_key="AIzaSyCkGMOjHINaKqBGFqhjRsxrjoWgAsC5cuI")
-    addr = client.get_address()
-    # g_data = client.google_geocode_service(address=addr)
-    # print(g_data)
-    g_data = client.here_geocode_service(address=addr)
-    g_data.output_values()
-    # lat_long = geo_data["results"][0]["geometry"]["location"] #["results"]["geometry"]["location"]
-    # print lat_long
-    # print type(lat_long)
+    def set_google_api_creds(self, api_key):
+        logger.info("Setting google api_key to %s", api_key)
+        self.google_api_key = api_key
