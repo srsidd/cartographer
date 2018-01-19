@@ -4,11 +4,10 @@ logger = logging.getLogger(__name__)
 
 def get_config(raw_json_data, param_path):
     """ Traverse json data to get required field
-        :param raw_json_data: Json data which contains the parameter value that should be unpacked
-        :type json
+        raw_json_data: (json) Json data which contains the parameter value that should be unpacked
+        
 
-        :param param_path: Parameter path in the json data for which the value needs to extracted
-        :type: string
+        param_path: (string) Parameter path in the json data for which the value needs to extracted
     """
     config_params = param_path.split('/')
 

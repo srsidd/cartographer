@@ -17,6 +17,7 @@ class GeoPoint():
         self.address = address
 
     def output_values(self):
+        """ Method to log the lat, lng and the address for a given GeoPoint """ 
         logger.info("Address: %s", self.address)
         logger.info("Latitude: %s", self.lat)
         logger.info("Longitude: %s", self.long)

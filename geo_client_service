@@ -11,6 +11,8 @@ if not os.path.exists("log/"):
     os.makedirs("log/")
 logging.basicConfig(level=logging.DEBUG, format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s',
                     datefmt='%m-%d %H:%M', filename='log/carographer.log')
+
+# Set up console logging
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 log_handler = logging.StreamHandler()
@@ -22,7 +24,7 @@ from cartographer.client_iface import CartographerIface
 from cartographer.geo_point import GeoPoint
 
 def parse_command_line():
-    """ define the command line arguments """
+    """ Define the command line arguments """
     parser = argparse.ArgumentParser(description='Geocoding Proxy Service.')
     parser.add_argument('--google_query', '-g', action='store_true', help='Make a request to the Google Geo Coding API, no args')
     parser.add_argument('--here_query', '-r', action='store_true', help='Make a request to the HERE Geo Coding API, no args')
@@ -49,7 +51,7 @@ def run():
         api_cred = raw_input('Please enter Google API key: ')
         iface.set_creds(google_api_cred=api_cred)
         geo_data = iface.use_google_geoCoding()
-        if geo_data is None:
+        if geo_data is None:  # Try secondary geo coding service, if first fails
             logger.warn("Google API returned None, trying here API")
             app_id = raw_input('Please enter Here app id: ')
             app_code = raw_input('Please enter Here app code: ')
@@ -65,7 +67,7 @@ def run():
         app_code = raw_input('Please enter Here app code: ')
         iface.set_creds(here_creds=[app_id, app_code])
         geo_data = iface.use_here_geoCoding()
-        if geo_data is None:
+        if geo_data is None:  # Try secondary geo coding service, if first fails
             logger.warn("Here API returned None, trying Google API")
             api_cred = raw_input('Please enter Google API key: ')
             iface.set_creds(google_api_cred=api_cred)
@@ -76,7 +78,7 @@ def run():
 
     if av['custom_query']:
         geo_data = iface.use_custom_geoCoding()
-        if geo_data is None:
+        if geo_data is None:  # Try secondary geo coding service, if first fails
             logger.warn("Custom API returned None, trying Google API")
             geo_data = iface.use_google_geoCoding()
             if geo_data is None:

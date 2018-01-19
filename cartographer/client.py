@@ -55,13 +55,12 @@ class CartographerClient(object):
 
     def __init__(self):
         """
-            here_app_id: (for HERE API for Work customers) Your APP ID.
+            here_app_id: (string) (for HERE API for Work customers) Your APP ID.
 
-            here_app_code: (for Maps API for Work customers) Your APP code.
+            here_app_code: (string) (for HERE API for Work customers) Your APP code.
 
-            google_api_key: (for Google Maps API for Work customers) Your client ID.
+            google_api_key: (string) (for Google Maps API for Work customers) Your client ID.
         """
-
         self.here_app_id = None
         self.here_app_code = None
         self.google_api_key = None
@@ -78,11 +77,12 @@ class CartographerClient(object):
 
     def request(self, url):
         """ Method to make get requests
-            url: URL path for making get requests
+            url: (string) URL path for making get requests
 
-            Returns: json
+            Returns: (json) parsed json response received from the queried url
         """
         logger.info("Sending get request to %s", url)
+        # Try sending a get request to the url
         try: 
             response = urllib2.urlopen(url, context=self.ssl_context)
         except urllib2.HTTPError, e:
@@ -95,22 +95,21 @@ class CartographerClient(object):
             import traceback
             logger.error('generic exception occurred, %s', traceback.format_exc())
             return None
+
         json_raw_response = response.read()
-        logger.removeHandler(log_handler)
-        # logger.setLevel(logging.WARN)
+
+        logger.removeHandler(log_handler) # temporarily disable console logging
         logger.info("Raw response recd from server: %s", json_raw_response)
         json_data = json.loads(json_raw_response)
-        logger.info("Parsed JSON response : %s", json_data)
-        logger.propogate = True
-        logger.addHandler(log_handler)
-        # logger.setLevel(logging.INFO)
+        logger.addHandler(log_handler) # Reenable console logging
+
         return json_data
 
     def here_geocode_service(self, address):
         """ Method to access the geocoding service by HERE
-            address: Address for which latitude longitudes are required. Must be space separated
+            address: (string) Address for which latitude longitudes are required. Must be space separated
 
-            Returns: GeoPoint or None
+            Returns: None or GeoPoint with the latitude, longitude and full address
         """
         if self.here_app_id is None or self.here_app_code is None:
             logger.error('Are you sure here app credentials are set?')
@@ -132,9 +131,9 @@ class CartographerClient(object):
 
     def google_geocode_service(self, address):
         """ Method to access the geocoding service by Google
-            address: Address for which latitude longitudes are required. Must be space separated
+            address: (string) Address for which latitude longitudes are required. Must be space separated
 
-            Returns: GeoPoint or None
+            Returns: None or GeoPoint with the latitude, longitude and full address
         """
         if self.google_api_key is None:
             logger.error('Are you sure google api credentials are set?')
