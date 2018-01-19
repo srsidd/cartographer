@@ -112,8 +112,9 @@ class CartographerClient(object):
             Returns: None or GeoPoint with the latitude, longitude and full address
         """
         if self.here_app_id is None or self.here_app_code is None:
-            logger.error('Are you sure here app credentials are set?')
-            return None
+            logger.error('here_app_id or here_app_code is incorrect')
+            raise ValueError("Are you sure here app credentials are set")
+
         app_id = "?app_id=" + self.here_app_id
         app_code = "&app_code=" + self.here_app_code
         address = "&searchtext=" + address
@@ -136,7 +137,8 @@ class CartographerClient(object):
             Returns: None or GeoPoint with the latitude, longitude and full address
         """
         if self.google_api_key is None:
-            logger.error('Are you sure google api credentials are set?')
+            logger.error('google_api_key is incorrect')
+            raise ValueError("Are you sure google api credentials are set")
             return None
         address = "?address=" + address
         request_url = _GOOGLE_BASE_URL + address
