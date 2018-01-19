@@ -1,0 +1,88 @@
+#!/usr/bin/python
+#
+# Author: Siddharth Srivatsa <srivatsasiddharth@gmail.com>, 1/2018
+
+import logging
+import argparse
+import os
+
+if not os.path.exists("log/"):
+    os.makedirs("log/")
+logging.basicConfig(level=logging.DEBUG, format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s',
+                    datefmt='%m-%d %H:%M', filename='log/carographer.log')
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+log_handler = logging.StreamHandler()
+log_handler.setFormatter(logging.Formatter('[%(levelname)s] %(message)s'))
+logger.addHandler(log_handler)
+from cartographer.client import CartographerClient
+from cartographer.client_iface import CartographerIface
+from cartographer.geo_point import GeoPoint
+
+def parse_command_line():
+    # define the command line arguments
+    parser = argparse.ArgumentParser(description='Geocoding Proxy Service.')
+    parser.add_argument('--google_query', '-g', action='store_true', help='Make a request to the Google Geo Coding API, takes in ')
+    parser.add_argument('--here_query', '-r', action='store_true', help='Make a request to the HERE Geo Coding API')
+    parser.add_argument('--custom_query', '-c', action='store_true', help='Make a request to a custom Geo Coding API')
+
+    args = parser.parse_args()
+    av = vars(args)
+
+    # print help if multiple command types are given
+    cmd_list = ['google_query', 'here_query', 'custom_query']
+    if reduce(lambda x,y: x + (1 if av[y] else 0), cmd_list, 0) != 1:
+        parser.print_help()
+        raise SystemExit
+
+    return av
+
+def run():
+    # Get command line options
+    av = parse_command_line()
+
+    # Connect to server
+    client = CartographerClient()
+    iface = CartographerIface(client)
+
+    if av['google_query']:
+        api_cred = raw_input('Please enter Google API key: ')
+        iface.set_creds(google_api_cred=api_cred)
+        geo_data = iface.use_google_geoCoding()
+        if geo_data is None:
+            logger.warn("Google API returned None, trying here API")
+            app_id = raw_input('Please enter Here app id: ')
+            app_code = raw_input('Please enter Here app code: ')
+            iface.set_creds(here_creds=[app_id, app_code])
+            geo_data = iface.use_here_geoCoding()
+            if geo_data is None:
+                logger.warn('Both API returned None')
+                return
+        geo_data.output_values()
+
+    if av['here_query']:
+        app_id = raw_input('Please enter Here app id: ')
+        app_code = raw_input('Please enter Here app code: ')
+        iface.set_creds(here_creds=[app_id, app_code])
+        geo_data = iface.use_here_geoCoding()
+        if geo_data is None:
+            logger.warn("Here API returned None, trying Google API")
+            api_cred = raw_input('Please enter Google API key: ')
+            iface.set_creds(google_api_cred=api_cred)
+            geo_data = iface.use_google_geoCoding()
+            if geo_data is None:
+                logger.warn('Both API returned None')
+        geo_data.output_values()
+
+    if av['custom_query']:
+        geo_data = iface.use_custom_geoCoding()
+        if geo_data is None:
+            logger.warn("Custom API returned None, trying Google API")
+            geo_data = iface.use_google_geoCoding()
+            if geo_data is None:
+                logger.warn('Both API returned None')
+        geo_data.output_values()
+
+
+if __name__ == '__main__':
+    run()
