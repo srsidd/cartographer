@@ -78,10 +78,9 @@ class CartographerClient(object):
 
     def request(self, url):
         """ Method to make get requests
-            :param url: URL path for making get requests
-            :type url: string
+            url: URL path for making get requests
 
-            :rtype: json
+            Returns: json
         """
         logger.info("Sending get request to %s", url)
         try: 
@@ -97,21 +96,21 @@ class CartographerClient(object):
             logger.error('generic exception occurred, %s', traceback.format_exc())
             return None
         json_raw_response = response.read()
-        # logger.propogate = False
-        logger.setLevel(logging.WARN)
+        logger.removeHandler(log_handler)
+        # logger.setLevel(logging.WARN)
         logger.info("Raw response recd from server: %s", json_raw_response)
         json_data = json.loads(json_raw_response)
         logger.info("Parsed JSON response : %s", json_data)
-        # logger.propogate = True
-        logger.setLevel(logging.INFO)
+        logger.propogate = True
+        logger.addHandler(log_handler)
+        # logger.setLevel(logging.INFO)
         return json_data
 
     def here_geocode_service(self, address):
         """ Method to access the geocoding service by HERE
-            :param address: Address for which latitude longitudes are required. Must be space separated
-            :type string
+            address: Address for which latitude longitudes are required. Must be space separated
 
-            :rtype: GeoPoint or None
+            Returns: GeoPoint or None
         """
         if self.here_app_id is None or self.here_app_code is None:
             logger.error('Are you sure here app credentials are set?')
@@ -133,10 +132,9 @@ class CartographerClient(object):
 
     def google_geocode_service(self, address):
         """ Method to access the geocoding service by Google
-            :param address: Address for which latitude longitudes are required. Must be space separated
-            :type string
+            address: Address for which latitude longitudes are required. Must be space separated
 
-            :rtype: GeoPoint or None
+            Returns: GeoPoint or None
         """
         if self.google_api_key is None:
             logger.error('Are you sure google api credentials are set?')
