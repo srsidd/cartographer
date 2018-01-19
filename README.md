@@ -26,4 +26,12 @@ optional arguments:
 
 ```
 
-## Feaatures
+## Features
+* Implemented in Python
+* Supports multiple geocoding services (Google and HERE)
+* Fallback to a backup geocoding service, in case the primary service fails
+* RESTful HTTP Interface
+* Uses JSON for data serialization
+* Json parser to get a particular parameter from the given jason data
+* Uses a [PIMPL architecture](http://en.cppreference.com/w/cpp/language/pimpl), to essentially hide the implementation details, and use a stable api to access member functions of the library.
+* Provides an option to query a custom url
