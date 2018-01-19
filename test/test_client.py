@@ -53,4 +53,3 @@ class ClientTest(unittest.TestCase):
         """ Test if the client can handle an invalid url """
         client = CartographerClient()
         self.assertIsNone(client.request("http://www.siddisthegreatestintheworld.com/"))
-
