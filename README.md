@@ -77,3 +77,20 @@ If we want to access the `lat` and `lng` fields, under location under geometry, 
 * Json parser to get a particular parameter from the given jason data
 * Uses a [PIMPL architecture](http://en.cppreference.com/w/cpp/language/pimpl), to essentially hide the implementation details, and use a stable api to access member functions of the library.
 * Provides an option to query a custom url
+* [Gitflow](https://www.atlassian.com/git/tutorials/comparing-workflows/gitflow-workflow) workflow design
+
+
+## Future work
+* Geo Point class can be extended to use lat and lng from different view points, different geometries
+* SSL certificates not verified needs to be fixed
+* Add more geo coding services
+* Provide interface for adding a new geo coding interface in real time
+
+## References
+* Geocoding Service by [HERE](https://developer.here.com/documentation/geocoder/topics/quick-start.html)
+* Geocoding Service by [Google](https://developers.google.com/maps/documentation/geocoding/start)
+* [RESTful HTTP Interface](https://en.wikipedia.org/wiki/Representational_state_transfer)
+* [JSON](https://en.wikipedia.org/wiki/JSON)
+* [Python](https://www.python.org/)
+* [git](https://git-scm.com/)
+* [Python Client for Google Maps Services](https://github.com/googlemaps/google-maps-services-python)
