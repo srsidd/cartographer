@@ -74,6 +74,7 @@ def run():
             geo_data = iface.use_google_geoCoding()
             if geo_data is None:
                 logger.warn('Both API returned None')
+                return
         geo_data.output_values()
 
     if av['custom_query']:
@@ -83,7 +84,10 @@ def run():
             geo_data = iface.use_google_geoCoding()
             if geo_data is None:
                 logger.warn('Both API returned None')
+                return
         geo_data.output_values()
+
+    print "Exiting!"
 
 
 if __name__ == '__main__':
