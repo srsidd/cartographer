@@ -142,7 +142,8 @@ class CartographerClient(object):
             logger.error('Are you sure google api credentials are set?')
             return None
         address = "?address=" + address
-        request_url = _GOOGLE_BASE_URL + address
+        app_key = "&key=" + self.google_api_key
+        request_url = _GOOGLE_BASE_URL + address + app_key
         api_response = self.request(url=request_url)
         if api_response is None:
             return None
