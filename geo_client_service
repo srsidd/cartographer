@@ -6,6 +6,10 @@ import logging
 import argparse
 import os
 
+# Use Sentry to catch errors
+import sentry_sdk
+sentry_sdk.init("https://a72f9a8a9f0349a6ba342d73ed688511@sentry.io/1520343")
+
 # Add a logger to log to file
 if not os.path.exists("log/"):
     os.makedirs("log/")
