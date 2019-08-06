@@ -10,6 +10,9 @@ import os
 import sentry_sdk
 sentry_sdk.init("https://a72f9a8a9f0349a6ba342d73ed688511@sentry.io/1520343")
 
+# Create error to see if sentry catches error
+division_by_zero = 1 / 0
+
 # Add a logger to log to file
 if not os.path.exists("log/"):
     os.makedirs("log/")
